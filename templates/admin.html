@@ -2,21 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-            <title>Homestay Admin Panel</title>
+    <title>Vibe Stay Admin</title>
 
-                <link rel="stylesheet"
-                          href="{{ url_for('static', filename='css/admin.css') }}">
-                          </head>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
 
-                          <body>
+<body>
 
-                              <h1>Homestay Admin Panel</h1>
+    <header>
+        <h1>Vibe Stay Admin</h1>
+        <p>Homestay Management</p>
+    </header>
 
-                                  <p>Flask server is working.</p>
+    <main>
 
-                                      <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+        <div class="page-header">
+            <h2>Homestays</h2>
+            <span id="totalHomestays">Loading...</span>
+        </div>
 
-                                      </body>
-                                      </html>
+        <div id="message"></div>
+
+        <div class="table-container">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Price</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+
+                <tbody id="homestayTable">
+                    <tr>
+                        <td colspan="6">Loading homestays...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+
+</body>
+</html>
