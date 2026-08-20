@@ -2,8 +2,55 @@ from flask import Flask, render_template, jsonify, request
 
 from services.github_service import get_data, get_file, update_data
 
+from services.imagekit_service import upload_image
+
 
 app = Flask(__name__)
+
+
+
+@app.route("/api/images/upload", methods=["POST"])
+def upload_image_api():
+
+    if "file" not in request.files:
+        return jsonify({
+            "success": False,
+            "message": "No image file received"
+        }), 400
+
+    file = request.files["file"]
+
+    if not file.filename:
+        return jsonify({
+            "success": False,
+            "message": "No image selected"
+        }), 400
+
+    folder = request.form.get("folder", "/vibestay")
+
+    try:
+
+        result = upload_image(
+            file_data=file.stream,
+            file_name=file.filename,
+            folder=folder
+        )
+
+        return jsonify({
+            "success": True,
+            "url": result.get("url"),
+            "fileId": result.get("fileId"),
+            "name": result.get("name")
+        })
+
+    except Exception as error:
+
+        print("ImageKit upload error:", error)
+
+        return jsonify({
+            "success": False,
+            "message": "Image upload failed"
+        }), 500
 
 
 @app.route("/")
@@ -58,6 +105,9 @@ def update_homestay(homestay_id):
         "message": "Homestay updated successfully",
         "homestay": updated_homestay
     })
+
+
+
 
 
 if __name__ == "__main__":
