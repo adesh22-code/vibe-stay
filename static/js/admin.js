@@ -1,5 +1,57 @@
 let homestays = [];
 
+document.getElementById("uploadMainImage").addEventListener(
+    "click",
+    async function () {
+
+        const input =
+            document.getElementById("mainImageFile");
+
+        const file = input.files[0];
+
+        if (!file) {
+            alert("Please select an image first.");
+            return;
+        }
+
+        const button =
+            document.getElementById("uploadMainImage");
+
+        button.disabled = true;
+        button.textContent = "Uploading...";
+
+        try {
+
+            const result =
+                await uploadImageToImageKit(
+                    file,
+                    "/vibestay"
+                );
+
+            document.getElementById("image").value =
+                result.url;
+
+            showMainImagePreview(result.url);
+
+            alert("Main image uploaded successfully.");
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Image upload failed: " +
+                error.message
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Upload Main Image";
+        }
+    }
+);
+
 
 async function uploadImageToImageKit(file, folder) {
 
