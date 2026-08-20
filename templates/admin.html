@@ -12,12 +12,15 @@
 
 <body>
 
-    <header>
-        <h1>Vibe Stay Admin</h1>
-        <p>Homestay Management</p>
-    </header>
+<header>
+    <h1>Vibe Stay Admin</h1>
+    <p>Homestay Management</p>
+</header>
 
-    <main>
+<main>
+
+    <!-- Homestay List -->
+    <section id="listSection">
 
         <div class="page-header">
             <h2>Homestays</h2>
@@ -36,7 +39,7 @@
                         <th>Name</th>
                         <th>Location</th>
                         <th>Price</th>
-                        <th>Phone</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
@@ -49,9 +52,142 @@
 
         </div>
 
-    </main>
+    </section>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+
+    <!-- Edit Form -->
+    <section id="editSection" class="edit-section">
+
+        <div class="page-header">
+            <h2>Edit Homestay</h2>
+
+            <button type="button" id="cancelEdit">
+                Cancel
+            </button>
+        </div>
+
+        <form id="editForm">
+
+            <input type="hidden" id="editId">
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="text" id="price">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" id="phone">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="whatsapp">WhatsApp</label>
+                    <input type="text" id="whatsapp">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="facebook">Facebook</label>
+                    <input type="text" id="facebook">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="website">Website</label>
+                    <input type="text" id="website">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="youtube">YouTube</label>
+                    <input type="text" id="youtube">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="instagram">Instagram</label>
+                    <input type="text" id="instagram">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="googleMap">Google Map</label>
+                    <input type="text" id="googleMap">
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+                <label for="scenery">Scenery</label>
+                <input type="text" id="scenery">
+            </div>
+
+
+            <div class="form-group">
+                <label for="amenities">Amenities</label>
+                <input type="text" id="amenities">
+            </div>
+
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" rows="6"></textarea>
+            </div>
+
+
+            <div class="form-group">
+                <label for="image">Main Image</label>
+                <input type="text" id="image">
+            </div>
+
+
+            <div class="form-group">
+                <label for="gallery">Gallery</label>
+                <textarea id="gallery" rows="5"></textarea>
+
+                <small>
+                    Separate gallery images with |
+                </small>
+            </div>
+
+
+            <div class="form-actions">
+
+                <button type="button" id="saveButton">
+                    Save Changes
+                </button>
+
+                <button type="button" id="cancelEdit2">
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 
 </body>
 </html>
