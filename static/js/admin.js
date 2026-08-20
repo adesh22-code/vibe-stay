@@ -229,6 +229,10 @@ function editHomestay(index) {
     document.getElementById("image").value =
         homestay.image ?? "";
 
+    showMainImagePreview(
+    homestay.image ?? ""
+    );
+
 
     document.getElementById("listSection").style.display =
         "none";
