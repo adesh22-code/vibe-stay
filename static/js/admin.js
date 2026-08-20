@@ -1,5 +1,108 @@
 let homestays = [];
 
+function showGalleryPreview(urls) {
+
+    const preview =
+        document.getElementById("galleryPreview");
+
+    preview.innerHTML = "";
+
+    urls.forEach((url, index) => {
+
+        if (!url) {
+            return;
+        }
+
+        const item =
+            document.createElement("div");
+
+        item.className = "gallery-item";
+
+        item.innerHTML = `
+            <img
+                src="${url}"
+                alt="Gallery image ${index + 1}"
+            >
+        `;
+
+        preview.appendChild(item);
+    });
+}
+
+document.getElementById("uploadGallery").addEventListener(
+    "click",
+    async function () {
+
+        const input =
+            document.getElementById("galleryFiles");
+
+        const files = Array.from(input.files);
+
+        if (files.length === 0) {
+            alert("Please select one or more images.");
+            return;
+        }
+
+        const button =
+            document.getElementById("uploadGallery");
+
+        button.disabled = true;
+        button.textContent = "Uploading...";
+
+        try {
+
+            const uploadedUrls = [];
+
+            for (const file of files) {
+
+                const result =
+                    await uploadImageToImageKit(
+                        file,
+                        "/vibestay"
+                    );
+
+                uploadedUrls.push(result.url);
+            }
+
+            const existing =
+                document.getElementById("gallery").value
+                    .split("|")
+                    .map(url => url.trim())
+                    .filter(url => url);
+
+            const allUrls = [
+                ...existing,
+                ...uploadedUrls
+            ];
+
+            document.getElementById("gallery").value =
+                allUrls.join("|");
+
+            showGalleryPreview(allUrls);
+
+            input.value = "";
+
+            alert(
+                `${uploadedUrls.length} gallery image(s) uploaded.`
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Gallery upload failed: " +
+                error.message
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Upload Gallery Images";
+        }
+    }
+);
+
 function showMainImagePreview(url) {
 
     const preview =
@@ -225,6 +328,13 @@ function editHomestay(index) {
 
     document.getElementById("gallery").value =
         homestay.gallery ?? "";
+
+    showGalleryPreview(
+    (homestay.gallery ?? "")
+        .split("|")
+        .map(url => url.trim())
+        .filter(url => url)
+    );
 
     document.getElementById("image").value =
         homestay.image ?? "";
