@@ -1,6 +1,33 @@
 let homestays = [];
 
 
+async function uploadImageToImageKit(file, folder) {
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("folder", folder);
+
+    const response = await fetch(
+        "/api/images/upload",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(
+            result.message || "Image upload failed"
+        );
+    }
+
+    return result;
+}
+
+
 async function loadHomestays() {
 
     const table = document.getElementById("homestayTable");
