@@ -154,18 +154,63 @@
 
 
             <div class="form-group">
-                <label for="image">Main Image</label>
-                <input type="text" id="image">
+
+    <label>Main Image</label>
+
+    <div id="mainImagePreview" class="image-preview">
+        No image
+    </div>
+
+    <input
+        type="file"
+        id="mainImageFile"
+        accept="image/*"
+    >
+
+    <button
+        type="button"
+        id="uploadMainImage">
+        Upload Main Image
+    </button>
+
+    <input
+        type="text"
+        id="image"
+        placeholder="ImageKit image URL"
+    >
+
             </div>
 
 
             <div class="form-group">
-                <label for="gallery">Gallery</label>
-                <textarea id="gallery" rows="5"></textarea>
 
-                <small>
-                    Separate gallery images with |
-                </small>
+    <label>Gallery</label>
+
+    <div id="galleryPreview" class="gallery-preview">
+    </div>
+
+    <input
+        type="file"
+        id="galleryFiles"
+        accept="image/*"
+        multiple
+    >
+
+    <button
+        type="button"
+        id="uploadGallery">
+        Upload Gallery Images
+    </button>
+
+    <textarea
+        id="gallery"
+        rows="5"
+        placeholder="Image URLs separated by |"></textarea>
+
+    <small>
+        Gallery images are stored using | between URLs.
+    </small>
+
             </div>
 
 
