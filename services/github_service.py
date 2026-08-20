@@ -23,7 +23,8 @@ def get_github_headers():
     }
 
 
-def get_data():
+def get_file():
+
     url = (
         f"https://api.github.com/repos/"
         f"{GITHUB_OWNER}/{GITHUB_REPO}/contents/"
@@ -45,4 +46,47 @@ def get_data():
 
     data = json.loads(content)
 
+    return data, github_file["sha"]
+
+
+def get_data():
+
+    data, _ = get_file()
+
     return data
+
+
+def update_data(data, sha):
+
+    url = (
+        f"https://api.github.com/repos/"
+        f"{GITHUB_OWNER}/{GITHUB_REPO}/contents/"
+        f"{GITHUB_FILE_PATH}"
+    )
+
+    content = json.dumps(
+        data,
+        indent=2,
+        ensure_ascii=False
+    )
+
+    encoded_content = base64.b64encode(
+        content.encode("utf-8")
+    ).decode("utf-8")
+
+    payload = {
+        "message": "Update homestay data",
+        "content": encoded_content,
+        "sha": sha,
+        "branch": GITHUB_BRANCH
+    }
+
+    response = requests.put(
+        url,
+        headers=get_github_headers(),
+        json=payload
+    )
+
+    response.raise_for_status()
+
+    return response.json()
