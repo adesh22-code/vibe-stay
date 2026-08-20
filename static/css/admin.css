@@ -1,8 +1,78 @@
-body {
-        font-family: Arial, sans-serif;
-            padding: 40px;
-            }
+* {
+    box-sizing: border-box;
+}
 
-            h1 {
-                margin-bottom: 10px;
-                }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    color: #222;
+}
+
+header {
+    background: #ffffff;
+    padding: 20px 30px;
+    border-bottom: 1px solid #ddd;
+}
+
+header h1 {
+    margin: 0 0 5px;
+}
+
+header p {
+    margin: 0;
+    color: #666;
+}
+
+main {
+    padding: 30px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.page-header h2 {
+    margin: 0;
+}
+
+#totalHomestays {
+    color: #666;
+}
+
+.table-container {
+    background: #ffffff;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #f8f8f8;
+}
+
+td img {
+    width: 70px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+#message {
+    margin-bottom: 15px;
+}
