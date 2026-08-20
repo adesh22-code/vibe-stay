@@ -1,5 +1,23 @@
 let homestays = [];
 
+function showMainImagePreview(url) {
+
+    const preview =
+        document.getElementById("mainImagePreview");
+
+    if (!url) {
+        preview.innerHTML = "No image";
+        return;
+    }
+
+    preview.innerHTML = `
+        <img
+            src="${url}"
+            alt="Main image preview"
+        >
+    `;
+}
+
 document.getElementById("uploadMainImage").addEventListener(
     "click",
     async function () {
