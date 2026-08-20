@@ -170,14 +170,100 @@ document.getElementById("cancelEdit2").addEventListener(
 
 document.getElementById("saveButton").addEventListener(
     "click",
-    function () {
+    saveHomestay
+);
 
-        alert(
-            "Save is not connected yet. We will connect it to GitHub in the next step."
+
+async function saveHomestay() {
+
+    const id = document.getElementById("editId").value;
+
+    const updatedHomestay = {
+        id: id,
+
+        name: document.getElementById("name").value,
+        location: document.getElementById("location").value,
+        price: document.getElementById("price").value,
+
+        scenery: document.getElementById("scenery").value,
+        amenities: document.getElementById("amenities").value,
+        description: document.getElementById("description").value,
+
+        phone: document.getElementById("phone").value,
+        whatsapp: document.getElementById("whatsapp").value,
+
+        facebook: document.getElementById("facebook").value,
+        website: document.getElementById("website").value,
+        youtube: document.getElementById("youtube").value,
+        instagram: document.getElementById("instagram").value,
+        googleMap: document.getElementById("googleMap").value,
+
+        gallery: document.getElementById("gallery").value,
+        image: document.getElementById("image").value
+    };
+
+
+    const saveButton =
+        document.getElementById("saveButton");
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+
+    try {
+
+        const response = await fetch(
+            `/api/homestays/${encodeURIComponent(id)}`,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(updatedHomestay)
+            }
         );
 
+
+        const result = await response.json();
+
+
+        if (!response.ok) {
+            throw new Error(
+                result.message || "Failed to update homestay"
+            );
+        }
+
+
+        alert("Homestay updated successfully on GitHub.");
+
+
+        document.getElementById("editSection").style.display =
+            "none";
+
+        document.getElementById("listSection").style.display =
+            "block";
+
+
+        await loadHomestays();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Error saving homestay: " +
+            error.message
+        );
+
+    } finally {
+
+        saveButton.disabled = false;
+        saveButton.textContent = "Save Changes";
     }
-);
+}
 
 
 loadHomestays();
