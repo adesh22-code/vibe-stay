@@ -12,7 +12,8 @@ def get_private_key():
     return private_key
 
 def upload_image(file_data, file_name, folder):
-    url = f"{IMAGEKIT_API_URL}/files/upload"
+    # Use the dedicated upload subdomain for ImageKit
+    url = "https://upload.imagekit.io/api/v1/files/upload"
 
     files = {
         "file": (file_name, file_data)
