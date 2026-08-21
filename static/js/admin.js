@@ -23,11 +23,108 @@ function showGalleryPreview(urls) {
                 src="${url}"
                 alt="Gallery image ${index + 1}"
             >
+
+            <button
+                type="button"
+                class="delete-gallery-image"
+                data-url="${encodeURIComponent(url)}">
+                Delete
+            </button>
         `;
 
         preview.appendChild(item);
     });
+
+    document
+        .querySelectorAll(".delete-gallery-image")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const url =
+                        decodeURIComponent(
+                            this.dataset.url
+                        );
+
+                    deleteGalleryImage(url);
+                }
+            );
+        });
 }
+
+async function deleteGalleryImage(url) {
+
+    const confirmed = confirm(
+        "Delete this image from ImageKit?\n\n" +
+        "This cannot be undone."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/api/images/delete",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    url: url
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+
+            throw new Error(
+                result.message ||
+                "Image deletion failed"
+            );
+        }
+
+        /*
+         * Remove the URL from the textarea.
+         * We are NOT saving to GitHub yet.
+         */
+        const galleryInput =
+            document.getElementById("gallery");
+
+        const urls =
+            galleryInput.value
+                .split("|")
+                .map(item => item.trim())
+                .filter(item => item && item !== url);
+
+        galleryInput.value =
+            urls.join("|");
+
+        showGalleryPreview(urls);
+
+        alert(
+            "Image deleted from ImageKit."
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to delete image: " +
+            error.message
+        );
+    }
+}
+
 
 document.getElementById("uploadGallery").addEventListener(
     "click",
