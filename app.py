@@ -75,35 +75,77 @@ def update_homestay(homestay_id):
             "message": "No data received"
         }), 400
 
-    # Get the current REAL data from GitHub
+    # Always fetch the latest version from GitHub.
+    # This prevents us from editing an old local copy.
     data, sha = get_file()
 
-    # Find the homestay
-    found = False
+    # Find the existing record.
+    existing_homestay = None
+    existing_index = None
 
     for index, homestay in enumerate(data):
 
         if str(homestay.get("id")) == str(homestay_id):
-
-            # Preserve the existing record structure
-            data[index] = updated_homestay
-
-            found = True
+            existing_homestay = homestay
+            existing_index = index
             break
 
-    if not found:
+    if existing_homestay is None:
         return jsonify({
             "success": False,
             "message": f"Homestay {homestay_id} not found"
         }), 404
 
-    # Update the REAL docs/data.json on GitHub
-    update_data(data, sha)
+    # Only fields controlled by our current edit form.
+    editable_fields = [
+        "name",
+        "location",
+        "price",
+        "scenery",
+        "amenities",
+        "description",
+        "phone",
+        "whatsapp",
+        "facebook",
+        "website",
+        "youtube",
+        "instagram",
+        "googleMap",
+        "gallery",
+        "image"
+    ]
+
+    # Update only those fields.
+    # Any other existing fields remain untouched.
+    for field in editable_fields:
+
+        if field in updated_homestay:
+            existing_homestay[field] = updated_homestay[field]
+
+    # Never allow the ID to be changed through the edit form.
+    existing_homestay["id"] = str(homestay_id)
+
+    # Put the modified record back into the original array.
+    data[existing_index] = existing_homestay
+
+    try:
+
+        # Commit the updated REAL data.json to GitHub.
+        update_data(data, sha)
+
+    except Exception as error:
+
+        print("GitHub update error:", error)
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to update data.json on GitHub"
+        }), 500
 
     return jsonify({
         "success": True,
         "message": "Homestay updated successfully",
-        "homestay": updated_homestay
+        "homestay": existing_homestay
     })
 
 
