@@ -153,6 +153,7 @@ def update_homestay(homestay_id):
     })
 
 
+
 @app.route("/api/images/delete", methods=["POST"])
 def delete_image_api():
 
@@ -167,16 +168,16 @@ def delete_image_api():
     image_url = data["url"]
 
     try:
-        # Get the latest REAL data from GitHub
+        # 1. Get the latest REAL data.json from GitHub
         github_data, sha = get_file()
 
-        # Find the ImageKit file
+        # 2. Find the image in ImageKit
         image_file = find_file_by_url(image_url)
 
         if not image_file:
             return jsonify({
                 "success": False,
-                "message": "Image was not found in ImageKit"
+                "message": "Image was not found in ImageKit. Nothing was deleted."
             }), 404
 
         file_id = image_file.get("fileId")
@@ -184,20 +185,19 @@ def delete_image_api():
         if not file_id:
             return jsonify({
                 "success": False,
-                "message": "ImageKit file ID was not found"
+                "message": "ImageKit file ID was not found. Nothing was deleted."
             }), 500
 
-        # Find every homestay containing this image
+        # 3. Find the image in our REAL data.json
         affected_records = []
 
         for homestay in github_data:
 
-            # Main image
+            # Main/profile image
             if homestay.get("image") == image_url:
-
                 affected_records.append(homestay)
 
-            # Gallery
+            # Gallery images
             gallery = homestay.get("gallery", "")
 
             gallery_urls = [
@@ -207,16 +207,16 @@ def delete_image_api():
             ]
 
             if image_url in gallery_urls:
-
-                affected_records.append(homestay)
+                if homestay not in affected_records:
+                    affected_records.append(homestay)
 
         if not affected_records:
             return jsonify({
                 "success": False,
-                "message": "Image URL is not present in data.json"
+                "message": "Image URL is not present in data.json. Nothing was deleted."
             }), 404
 
-        # Remove the URL from the REAL JSON data
+        # 4. Prepare the modified JSON
         for homestay in affected_records:
 
             if homestay.get("image") == image_url:
@@ -227,32 +227,52 @@ def delete_image_api():
             gallery_urls = [
                 url.strip()
                 for url in gallery.split("|")
-                if url.strip()
-                and url.strip() != image_url
+                if url.strip() and url.strip() != image_url
             ]
 
             homestay["gallery"] = "|".join(gallery_urls)
 
-        # Delete actual image from ImageKit
+        # 5. Delete from ImageKit
         delete_image(file_id)
 
-        # Commit modified JSON to GitHub
-        update_data(github_data, sha)
+        # 6. Update GitHub with the modified JSON
+        try:
+
+            update_data(github_data, sha)
+
+        except Exception as github_error:
+
+            print("GitHub update failed after ImageKit deletion:")
+            print(github_error)
+
+            return jsonify({
+                "success": False,
+                "message": (
+                    "Image was deleted from ImageKit, "
+                    "but GitHub update failed. "
+                    "The URL may still exist in data.json."
+                ),
+                "imageDeleted": True,
+                "githubUpdated": False
+            }), 500
 
         return jsonify({
             "success": True,
             "message": "Image deleted successfully",
+            "imageDeleted": True,
+            "githubUpdated": True,
             "fileId": file_id,
             "url": image_url
         })
 
     except Exception as error:
 
-        print("Image deletion error:", error)
+        print("Image deletion error:")
+        print(error)
 
         return jsonify({
             "success": False,
-            "message": "Image deletion failed"
+            "message": "Image deletion failed. Nothing was confirmed as deleted."
         }), 500
 
 
