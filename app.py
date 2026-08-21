@@ -1,6 +1,6 @@
 import os
 
-os.environ["IMAGEKIT_PRIVATE_KEY"] = "private_xxxxxxxxxxxxxxxxx"
+os.environ["IMAGEKIT_PRIVATE_KEY"] = "private_CYRHDBDLYGDNY/Ejc/+ceyKVL+E="
 os.environ["IMAGEKIT_URL_ENDPOINT"] = "https://ik.imagekit.io/vibestay"
 
 from flask import Flask, render_template, jsonify, request
@@ -15,9 +15,6 @@ from services.imagekit_service import (
 
 
 app = Flask(__name__)
-
-os.environ["IMAGEKIT_PRIVATE_KEY"] = "private_CYRHDBDLYGDNY/Ejc/+ceyKVL+E="
-os.environ["IMAGEKIT_URL_ENDPOINT"] = "https://ik.imagekit.io/vibestay"
 
 
 
