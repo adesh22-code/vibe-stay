@@ -130,9 +130,9 @@ function showMainImagePreview(url) {
 
     // Wrap the image and add a delete button
     preview.innerHTML = `
-        <div class="gallery-item">
-            <img src="${url}" alt="Main image preview">
-            <button type="button" class="delete-main-image" data-url="${encodeURIComponent(url)}">
+        <div class="gallery-item" style="position: relative; display: inline-block;">
+            <img src="${url}" alt="Main image preview" style="max-width: 200px; display: block;">
+            <button type="button" class="delete-main-image" data-url="${encodeURIComponent(url)}" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; padding: 5px; cursor: pointer;">
                 Delete
             </button>
         </div>
