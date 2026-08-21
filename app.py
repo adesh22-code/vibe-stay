@@ -2,7 +2,11 @@ from flask import Flask, render_template, jsonify, request
 
 from services.github_service import get_data, get_file, update_data
 
-from services.imagekit_service import upload_image, find_file_by_url
+from services.imagekit_service import (
+    upload_image,
+    find_file_by_url,
+    delete_image
+)
 
 
 app = Flask(__name__)
@@ -187,6 +191,58 @@ def image_info():
         return jsonify({
             "success": False,
             "message": "Unable to find image in ImageKit"
+        }), 500
+
+
+@app.route("/api/images/delete", methods=["POST"])
+def delete_image_api():
+
+    data = request.get_json()
+
+    if not data or not data.get("url"):
+        return jsonify({
+            "success": False,
+            "message": "Image URL is required"
+        }), 400
+
+    image_url = data["url"]
+
+    try:
+
+        # Find the actual ImageKit file
+        image_file = find_file_by_url(image_url)
+
+        if not image_file:
+            return jsonify({
+                "success": False,
+                "message": "Image was not found in ImageKit"
+            }), 404
+
+        file_id = image_file.get("fileId")
+
+        if not file_id:
+            return jsonify({
+                "success": False,
+                "message": "ImageKit file ID was not found"
+            }), 500
+
+        # Delete the REAL image from ImageKit
+        delete_image(file_id)
+
+        return jsonify({
+            "success": True,
+            "message": "Image deleted from ImageKit",
+            "fileId": file_id,
+            "url": image_url
+        })
+
+    except Exception as error:
+
+        print("ImageKit delete error:", error)
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to delete image from ImageKit"
         }), 500
 
 
