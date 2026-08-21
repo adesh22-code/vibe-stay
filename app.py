@@ -15,6 +15,55 @@ from services.imagekit_service import (
 
 app = Flask(__name__)
 
+@app.route("/api/homestays", methods=["POST"])
+def add_homestay():
+    new_homestay = request.get_json()
+
+    if not new_homestay:
+        return jsonify({"success": False, "message": "No data received"}), 400
+
+    data, sha = get_file()
+
+    # Find the highest existing ID to create the next one
+    max_id = 0
+    for homestay in data:
+        try:
+            current_id = int(homestay.get("id", 0))
+            if current_id > max_id:
+                max_id = current_id
+        except ValueError:
+            pass
+
+    new_id = str(max_id + 1)
+    
+    # Structure the new record
+    editable_fields = [
+        "name", "location", "price", "scenery", "amenities",
+        "description", "phone", "whatsapp", "facebook",
+        "website", "youtube", "instagram", "googleMap",
+        "gallery", "image"
+    ]
+
+    final_homestay = {"id": new_id}
+    for field in editable_fields:
+        final_homestay[field] = new_homestay.get(field, "")
+
+    data.append(final_homestay)
+
+    try:
+        update_data(data, sha)
+    except Exception as error:
+        print("GitHub add error:", error)
+        return jsonify({"success": False, "message": "Unable to update GitHub"}), 500
+
+    return jsonify({
+        "success": True,
+        "message": "Homestay added successfully",
+        "homestay": final_homestay
+    })
+
+
+
 @app.route("/api/images/upload", methods=["POST"])
 def upload_image_api():
     if "file" not in request.files:
