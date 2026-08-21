@@ -54,11 +54,17 @@ function showGalleryPreview(urls) {
         });
 }
 
+
 async function deleteGalleryImage(url) {
 
     const confirmed = confirm(
-        "Delete this image from ImageKit?\n\n" +
-        "This cannot be undone."
+        "⚠️ PERMANENT IMAGE DELETION\n\n" +
+        "This image will be permanently deleted from ImageKit " +
+        "and removed from the homestay data.\n\n" +
+        "Image:\n" +
+        url +
+        "\n\n" +
+        "Are you sure you want to continue?"
     );
 
     if (!confirmed) {
@@ -85,7 +91,6 @@ async function deleteGalleryImage(url) {
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-
             throw new Error(
                 result.message ||
                 "Image deletion failed"
@@ -93,8 +98,7 @@ async function deleteGalleryImage(url) {
         }
 
         /*
-         * Remove the URL from the textarea.
-         * We are NOT saving to GitHub yet.
+         * Remove the deleted URL from the current form.
          */
         const galleryInput =
             document.getElementById("gallery");
@@ -103,7 +107,10 @@ async function deleteGalleryImage(url) {
             galleryInput.value
                 .split("|")
                 .map(item => item.trim())
-                .filter(item => item && item !== url);
+                .filter(item =>
+                    item &&
+                    item !== url
+                );
 
         galleryInput.value =
             urls.join("|");
@@ -111,7 +118,8 @@ async function deleteGalleryImage(url) {
         showGalleryPreview(urls);
 
         alert(
-            "Image deleted from ImageKit."
+            "Image permanently deleted from ImageKit " +
+            "and removed from GitHub data."
         );
 
     } catch (error) {
@@ -119,7 +127,7 @@ async function deleteGalleryImage(url) {
         console.error(error);
 
         alert(
-            "Unable to delete image: " +
+            "Unable to delete image:\n\n" +
             error.message
         );
     }
