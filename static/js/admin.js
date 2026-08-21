@@ -128,7 +128,63 @@ function showMainImagePreview(url) {
         return;
     }
 
-    preview.innerHTML = `<img src="${url}" alt="Main image preview">`;
+    // Wrap the image and add a delete button
+    preview.innerHTML = `
+        <div class="gallery-item">
+            <img src="${url}" alt="Main image preview">
+            <button type="button" class="delete-main-image" data-url="${encodeURIComponent(url)}">
+                Delete
+            </button>
+        </div>
+    `;
+
+    // Attach click listener to the new delete button
+    document.querySelector(".delete-main-image").addEventListener("click", function () {
+        const decodedUrl = decodeURIComponent(this.dataset.url);
+        deleteMainImage(decodedUrl);
+    });
+}
+
+async function deleteMainImage(url) {
+    const confirmed = confirm(
+        "⚠️ PERMANENT IMAGE DELETION\n\n" +
+        "This main image will be permanently deleted from ImageKit " +
+        "and removed from the homestay data.\n\n" +
+        "Image:\n" + url + "\n\n" +
+        "Are you sure you want to continue?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/images/delete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url: url })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Image deletion failed");
+        }
+
+        // Clear the main image input field
+        document.getElementById("image").value = "";
+        
+        // Update the preview to show "No image"
+        showMainImagePreview("");
+
+        alert("Main image permanently deleted from ImageKit and removed from GitHub data.");
+
+    } catch (error) {
+        console.error(error);
+        alert("Unable to delete image:\n\n" + error.message);
+    }
 }
 
 document.getElementById("uploadMainImage").addEventListener("click", async function () {
