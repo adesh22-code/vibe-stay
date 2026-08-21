@@ -1,5 +1,28 @@
 let homestays = [];
 
+function showAddForm() {
+    // Clear the hidden ID so the system knows it's new
+    document.getElementById("editId").value = "";
+    
+    // Clear all text fields
+    const fields = [
+        "name", "location", "price", "scenery", "amenities", "description", 
+        "phone", "whatsapp", "facebook", "website", "youtube", "instagram", 
+        "googleMap", "gallery", "image"
+    ];
+    fields.forEach(field => document.getElementById(field).value = "");
+
+    // Clear image previews
+    showGalleryPreview([]);
+    showMainImagePreview("");
+
+    // Switch views
+    document.getElementById("listSection").style.display = "none";
+    document.getElementById("editSection").style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+
 function showGalleryPreview(urls) {
 
     const preview = document.getElementById("galleryPreview");
