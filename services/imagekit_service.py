@@ -7,14 +7,15 @@ IMAGEKIT_API_URL = "https://api.imagekit.io/v1"
 
 
 def get_private_key():
-    private_key = os.environ.get("private_CYRHDBDLYGDNY/Ejc/+ceyKVL+E=")
+    print("SERVICE sees IMAGEKIT_PRIVATE_KEY:",
+          "YES" if os.environ.get("IMAGEKIT_PRIVATE_KEY") else "NO")
+
+    private_key = os.environ.get("IMAGEKIT_PRIVATE_KEY")
 
     if not private_key:
-        raise RuntimeError(
-            "IMAGEKIT_PRIVATE_KEY environment variable is not set"
-        )
+        raise RuntimeError("IMAGEKIT_PRIVATE_KEY is not set")
 
-    return private_key.strip()
+    return private_key
 
 
 def imagekit_request(method, url, **kwargs):
