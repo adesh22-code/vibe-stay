@@ -153,47 +153,6 @@ def update_homestay(homestay_id):
     })
 
 
-@app.route("/api/images/info", methods=["POST"])
-def image_info():
-
-    data = request.get_json()
-
-    if not data or not data.get("url"):
-        return jsonify({
-            "success": False,
-            "message": "Image URL is required"
-        }), 400
-
-    image_url = data["url"]
-
-    try:
-
-        image_file = find_file_by_url(image_url)
-
-        if not image_file:
-            return jsonify({
-                "success": False,
-                "message": "Image not found in ImageKit"
-            }), 404
-
-        return jsonify({
-            "success": True,
-            "fileId": image_file.get("fileId"),
-            "url": image_file.get("url"),
-            "name": image_file.get("name"),
-            "filePath": image_file.get("filePath")
-        })
-
-    except Exception as error:
-
-        print("ImageKit lookup error:", error)
-
-        return jsonify({
-            "success": False,
-            "message": "Unable to find image in ImageKit"
-        }), 500
-
-
 @app.route("/api/images/delete", methods=["POST"])
 def delete_image_api():
 
@@ -208,8 +167,10 @@ def delete_image_api():
     image_url = data["url"]
 
     try:
+        # Get the latest REAL data from GitHub
+        github_data, sha = get_file()
 
-        # Find the actual ImageKit file
+        # Find the ImageKit file
         image_file = find_file_by_url(image_url)
 
         if not image_file:
@@ -226,23 +187,72 @@ def delete_image_api():
                 "message": "ImageKit file ID was not found"
             }), 500
 
-        # Delete the REAL image from ImageKit
+        # Find every homestay containing this image
+        affected_records = []
+
+        for homestay in github_data:
+
+            # Main image
+            if homestay.get("image") == image_url:
+
+                affected_records.append(homestay)
+
+            # Gallery
+            gallery = homestay.get("gallery", "")
+
+            gallery_urls = [
+                url.strip()
+                for url in gallery.split("|")
+                if url.strip()
+            ]
+
+            if image_url in gallery_urls:
+
+                affected_records.append(homestay)
+
+        if not affected_records:
+            return jsonify({
+                "success": False,
+                "message": "Image URL is not present in data.json"
+            }), 404
+
+        # Remove the URL from the REAL JSON data
+        for homestay in affected_records:
+
+            if homestay.get("image") == image_url:
+                homestay["image"] = ""
+
+            gallery = homestay.get("gallery", "")
+
+            gallery_urls = [
+                url.strip()
+                for url in gallery.split("|")
+                if url.strip()
+                and url.strip() != image_url
+            ]
+
+            homestay["gallery"] = "|".join(gallery_urls)
+
+        # Delete actual image from ImageKit
         delete_image(file_id)
+
+        # Commit modified JSON to GitHub
+        update_data(github_data, sha)
 
         return jsonify({
             "success": True,
-            "message": "Image deleted from ImageKit",
+            "message": "Image deleted successfully",
             "fileId": file_id,
             "url": image_url
         })
 
     except Exception as error:
 
-        print("ImageKit delete error:", error)
+        print("Image deletion error:", error)
 
         return jsonify({
             "success": False,
-            "message": "Unable to delete image from ImageKit"
+            "message": "Image deletion failed"
         }), 500
 
 
