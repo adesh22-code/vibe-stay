@@ -93,47 +93,44 @@ def find_file_by_url(image_url):
     if not image_url:
         return None
 
-    parsed = urlparse(image_url)
+    from urllib.parse import urlparse, unquote
 
+    parsed = urlparse(image_url)
     path = unquote(parsed.path)
 
     print("ImageKit delivery URL path:", path)
 
-    # Expected URL:
+    # Example delivery URL:
+    # /vibestay/vibestay/photo.webp
     #
-    # /vibestay/vibestay/photo.jpg
-    #
-    # First "vibestay" = URL endpoint
-    # Second "vibestay" = Media Library folder
-    #
-    # Therefore actual ImageKit filePath:
-    #
-    # /vibestay/photo.jpg
+    # Actual ImageKit filePath:
+    # /vibestay/photo.webp
 
     prefix = "/vibestay/"
 
     if not path.startswith(prefix):
         return None
 
-    file_path = path[len(prefix):]
+    remaining_path = path[len(prefix):]
 
-    # Add the Media Library folder.
-    file_path = "/vibestay/" + file_path
+    file_path = "/" + remaining_path
 
     print("Searching ImageKit filePath:", file_path)
 
     url = f"{IMAGEKIT_API_URL}/files"
 
-    response = imagekit_request(
-        "GET",
+    response = requests.get(
         url,
+        auth=(get_private_key(), ""),
         params={
-            "path": "/vibestay"
-        }
+            "path": file_path
+        },
+        timeout=30
     )
 
+    print("ImageKit search status:", response.status_code)
+
     if not response.ok:
-        print("ImageKit search status:", response.status_code)
         print("ImageKit search response:", response.text)
         print(
             "ImageKit request ID:",
@@ -149,6 +146,9 @@ def find_file_by_url(image_url):
         for image_file in files:
 
             if image_file.get("filePath") == file_path:
+                print("ImageKit file found:", image_file.get("fileId"))
                 return image_file
+
+    print("ImageKit file not found:", file_path)
 
     return None
