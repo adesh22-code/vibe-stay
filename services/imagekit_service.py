@@ -50,13 +50,29 @@ def delete_image(file_id):
     response.raise_for_status()
 
     return response.json() if response.content else {}
+
+
 def find_file_by_url(image_url):
     """
-    Find an ImageKit file using the URL stored in data.json.
-
-    Handles ImageKit transformation parameters such as:
-    ?tr=w-1200
+    Find an ImageKit file using the path contained in its delivery URL.
     """
+
+    from urllib.parse import urlparse, unquote
+
+    parsed = urlparse(image_url)
+
+    path = unquote(parsed.path)
+
+    # Example:
+    # /vibestay/vibestay/photo.webp
+    #
+    # We need the ImageKit file path:
+    # /vibestay/photo.webp
+
+    if "/vibestay/" not in path:
+        return None
+
+    file_path = "/" + path.split("/vibestay/", 1)[1]
 
     url = f"{IMAGEKIT_API_URL}/files"
 
@@ -64,7 +80,7 @@ def find_file_by_url(image_url):
         url,
         auth=(get_private_key(), ""),
         params={
-            "searchQuery": f'url:"{image_url}"'
+            "path": file_path
         }
     )
 
@@ -72,30 +88,10 @@ def find_file_by_url(image_url):
 
     files = response.json()
 
-    # First: exact URL match
-    for image_file in files:
-
-        if image_file.get("url") == image_url:
-            return image_file
-
-    # Second: compare the URL without ImageKit transformations
-    stored_url = image_url.split("?")[0]
-
-    for image_file in files:
-
-        file_url = image_file.get("url", "").split("?")[0]
-
-        if file_url == stored_url:
-            return image_file
-
-    # Third: compare file paths
-    if "/vibestay/" in stored_url:
-
-        file_path = stored_url.split("/vibestay/", 1)[1]
-
+    if isinstance(files, list):
         for image_file in files:
 
-            if image_file.get("filePath", "").lstrip("/") == file_path:
+            if image_file.get("filePath") == file_path:
                 return image_file
 
     return None
