@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 
 from services.github_service import get_data, get_file, update_data
 
-from services.imagekit_service import upload_image
+from services.imagekit_service import upload_image, find_file_by_url
 
 
 app = Flask(__name__)
@@ -147,6 +147,47 @@ def update_homestay(homestay_id):
         "message": "Homestay updated successfully",
         "homestay": existing_homestay
     })
+
+
+@app.route("/api/images/info", methods=["POST"])
+def image_info():
+
+    data = request.get_json()
+
+    if not data or not data.get("url"):
+        return jsonify({
+            "success": False,
+            "message": "Image URL is required"
+        }), 400
+
+    image_url = data["url"]
+
+    try:
+
+        image_file = find_file_by_url(image_url)
+
+        if not image_file:
+            return jsonify({
+                "success": False,
+                "message": "Image not found in ImageKit"
+            }), 404
+
+        return jsonify({
+            "success": True,
+            "fileId": image_file.get("fileId"),
+            "url": image_file.get("url"),
+            "name": image_file.get("name"),
+            "filePath": image_file.get("filePath")
+        })
+
+    except Exception as error:
+
+        print("ImageKit lookup error:", error)
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to find image in ImageKit"
+        }), 500
 
 
 
