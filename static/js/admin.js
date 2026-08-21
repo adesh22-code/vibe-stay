@@ -361,9 +361,9 @@ document.getElementById("saveButton").addEventListener("click", saveHomestay);
 
 async function saveHomestay() {
     const id = document.getElementById("editId").value;
+    const isNew = !id; // True if adding new, False if editing
 
     const updatedHomestay = {
-        id: id,
         name: document.getElementById("name").value,
         location: document.getElementById("location").value,
         price: document.getElementById("price").value,
@@ -381,30 +381,35 @@ async function saveHomestay() {
         image: document.getElementById("image").value
     };
 
+    if (!isNew) {
+        updatedHomestay.id = id;
+    }
+
     const saveButton = document.getElementById("saveButton");
     saveButton.disabled = true;
     saveButton.textContent = "Saving...";
 
+    // Dynamically set endpoint and method
+    const url = isNew ? "/api/homestays" : `/api/homestays/${encodeURIComponent(id)}`;
+    const method = isNew ? "POST" : "PUT";
+
     try {
-        const response = await fetch(`/api/homestays/${encodeURIComponent(id)}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
+        const response = await fetch(url, {
+            method: method,
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updatedHomestay)
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.message || "Failed to update homestay");
+            throw new Error(result.message || "Failed to save homestay");
         }
 
-        alert("Homestay updated successfully on GitHub.");
+        alert(isNew ? "New homestay added successfully!" : "Homestay updated successfully.");
 
         document.getElementById("editSection").style.display = "none";
         document.getElementById("listSection").style.display = "block";
-
         await loadHomestays();
 
     } catch (error) {
