@@ -50,11 +50,12 @@ def delete_image(file_id):
     response.raise_for_status()
 
     return response.json() if response.content else {}
-
 def find_file_by_url(image_url):
     """
-    Find an ImageKit file using its exact URL.
-    Returns the ImageKit file information or None.
+    Find an ImageKit file using the URL stored in data.json.
+
+    Handles ImageKit transformation parameters such as:
+    ?tr=w-1200
     """
 
     url = f"{IMAGEKIT_API_URL}/files"
@@ -71,9 +72,30 @@ def find_file_by_url(image_url):
 
     files = response.json()
 
+    # First: exact URL match
     for image_file in files:
 
         if image_file.get("url") == image_url:
             return image_file
+
+    # Second: compare the URL without ImageKit transformations
+    stored_url = image_url.split("?")[0]
+
+    for image_file in files:
+
+        file_url = image_file.get("url", "").split("?")[0]
+
+        if file_url == stored_url:
+            return image_file
+
+    # Third: compare file paths
+    if "/vibestay/" in stored_url:
+
+        file_path = stored_url.split("/vibestay/", 1)[1]
+
+        for image_file in files:
+
+            if image_file.get("filePath", "").lstrip("/") == file_path:
+                return image_file
 
     return None
