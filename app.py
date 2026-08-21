@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, jsonify, request
 
 from services.github_service import get_data, get_file, update_data
@@ -10,6 +11,9 @@ from services.imagekit_service import (
 
 
 app = Flask(__name__)
+
+os.environ["IMAGEKIT_PRIVATE_KEY"] = "private_CYRHDBDLYGDNY/Ejc/+ceyKVL+E="
+os.environ["IMAGEKIT_URL_ENDPOINT"] = "https://ik.imagekit.io/vibestay"
 
 
 
