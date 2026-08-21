@@ -50,3 +50,30 @@ def delete_image(file_id):
     response.raise_for_status()
 
     return response.json() if response.content else {}
+
+def find_file_by_url(image_url):
+    """
+    Find an ImageKit file using its exact URL.
+    Returns the ImageKit file information or None.
+    """
+
+    url = f"{IMAGEKIT_API_URL}/files"
+
+    response = requests.get(
+        url,
+        auth=(get_private_key(), ""),
+        params={
+            "searchQuery": f'url:"{image_url}"'
+        }
+    )
+
+    response.raise_for_status()
+
+    files = response.json()
+
+    for image_file in files:
+
+        if image_file.get("url") == image_url:
+            return image_file
+
+    return None
