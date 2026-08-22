@@ -18,24 +18,6 @@
     "image": ""
   },
   {
-    "id": "3",
-    "name": "\"Sunrise Homestay\"",
-    "location": "Chatakpur",
-    "price": "3300",
-    "scenery": "Kunchengunga, Sinchel, Garden, Nature",
-    "amenities": "6 Room, 12 Bed, Geaser",
-    "description": "\"Located at the offbeat area chatakpur. Offer breakfast, Lunch, Snacks, Dinner\"",
-    "phone": "8116969563",
-    "whatsapp": "8116969563",
-    "facebook": "",
-    "website": "",
-    "youtube": "https://youtu.be/AI4_RNg6pdM?si=omx23BECCYICjILA",
-    "instagram": "",
-    "googleMap": "https://www.google.com/search?client=ms-android-xiaomi-terr1-rso2&hs=SqiV&sca_esv=7eb2debaf3275be8&hl=en-IN&cs=1&sxsrf=APpeQnsFMoAvg6WiEBQXQFt2ymNy6TQ-cw%3A1785925174736&kgmid=%2Fg%2F11h10vsnp5&q=Sunrise%20Homestay&shem=dlvs1%2Cepsd1%2Cltae%2Crimspwouoe&shndl=30&source=sh%2Fx%2Floc%2Funi%2Fm1%2F4&kgs=97c6a84db6481f25",
-    "gallery": "sunrise/5.jpg|sunrise/2.jpg|sunrise/3.jpg|sunrise/4.jpg",
-    "image": "sunrise/1.jpg"
-  },
-  {
     "id": "4",
     "name": "\"Red Maple\"",
     "location": "Sonada",
