@@ -1,5 +1,38 @@
 let homestays = [];
 
+async function deleteHomestay(id) {
+    const confirmed = confirm(
+        "🛑 WARNING: PERMANENT DELETION\n\n" +
+        "This will completely remove the homestay and permanently delete its main image and all gallery images from ImageKit.\n\n" +
+        "Are you absolutely sure you want to proceed?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/homestays/${encodeURIComponent(id)}`, {
+            method: "DELETE"
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to delete homestay");
+        }
+
+        alert("Homestay and all associated images were successfully deleted.");
+        
+        // Refresh the table to show the updated list
+        await loadHomestays();
+
+    } catch (error) {
+        console.error(error);
+        alert("Error deleting homestay: " + error.message);
+    }
+}
+
 function showAddForm() {
     // Clear the hidden ID so the system knows it's new
     document.getElementById("editId").value = "";
@@ -290,6 +323,9 @@ async function loadHomestays() {
                 <td>
                     <button type="button" class="edit-button" onclick="editHomestay(${index})">
                         Edit
+                    </button>
+                    <button type="button" class="delete-button" onclick="deleteHomestay('${homestay.id}')" style="background-color: #dc3545; color: white; margin-left: 8px; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">
+                        Delete
                     </button>
                 </td>
             `;
