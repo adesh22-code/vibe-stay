@@ -1,23 +1,5 @@
 [
   {
-    "id": "1",
-    "name": "\"Sherpa Homestay\"",
-    "location": "Sonada",
-    "price": "1200",
-    "scenery": "pineforest, hill and mountain, greenary",
-    "amenities": "heater, geaser, cooked local food  etc",
-    "description": "\"Located at Nayabusty Sonada\"",
-    "phone": "7365833207",
-    "whatsapp": "7365833207",
-    "facebook": "https://www.facebook.com/p/Sherpa-Home-Stay-100054401116338/",
-    "website": "",
-    "youtube": "https://youtu.be/_6RNYDpoCo4?si=ee9ErZRKLU0r_-vi",
-    "instagram": "",
-    "googleMap": "https://share.google/7mYxN5GTFhNxKNMyY",
-    "gallery": "",
-    "image": "https://ik.imagekit.io/vibestay/vibestay/1000012066_kGaJVlEhyD.jpg"
-  },
-  {
     "id": "2",
     "name": "\"TIEEDI\"",
     "location": "Sonada",
