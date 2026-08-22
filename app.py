@@ -263,5 +263,59 @@ def delete_image_api():
             "message": "Image deletion failed. Nothing was confirmed as deleted."
         }), 500
 
+@app.route("/api/homestays/<homestay_id>", methods=["DELETE"])
+def delete_homestay_api(homestay_id):
+    # 1. Fetch current data
+    data, sha = get_file()
+    
+    target_homestay = None
+    target_index = -1
+    
+    # 2. Find the homestay by ID
+    for index, homestay in enumerate(data):
+        if str(homestay.get("id")) == str(homestay_id):
+            target_homestay = homestay
+            target_index = index
+            break
+            
+    if target_homestay is None:
+        return jsonify({"success": False, "message": "Homestay not found"}), 404
+        
+    # 3. Collect all associated image URLs
+    urls_to_delete = []
+    
+    if target_homestay.get("image"):
+        urls_to_delete.append(target_homestay["image"])
+        
+    gallery = target_homestay.get("gallery", "")
+    gallery_urls = [url.strip() for url in gallery.split("|") if url.strip()]
+    urls_to_delete.extend(gallery_urls)
+    
+    # 4. Remove the homestay from the JSON array
+    data.pop(target_index)
+    
+    # 5. Update GitHub FIRST (safest way to prevent database ghost records)
+    try:
+        update_data(data, sha)
+    except Exception as error:
+        print("GitHub deletion error:", error)
+        return jsonify({"success": False, "message": "Failed to update GitHub data"}), 500
+        
+    # 6. Delete all collected images from ImageKit
+    for url in urls_to_delete:
+        try:
+            image_file = find_file_by_url(url)
+            if image_file and image_file.get("fileId"):
+                delete_image(image_file["fileId"])
+        except Exception as e:
+            # We print the error but don't stop the loop; 
+            # we want to try deleting as many as possible.
+            print(f"Failed to delete {url} from ImageKit:", e)
+            
+    return jsonify({
+        "success": True, 
+        "message": "Homestay and all associated images deleted successfully"
+    })
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
